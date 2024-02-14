@@ -89,4 +89,17 @@ def get_days_difference(date_time):
     return days_difference
 
 
-# check_currencies_course_date()
+def prepare_datas(data_in):
+    """ Подготовка данных для конвертации """
+
+    print(data_in)
+    sum_to_convert = int(data_in[1])  # получаем сумму для конвертации
+    print(sum_to_convert)
+    convert_type = ' '.join(data_in[2:])  # получаем тип конвертации
+    print(convert_type)
+
+
+
+
+
+prepare_datas(['/convert', '100', 'EUR', 'to', 'USD'])

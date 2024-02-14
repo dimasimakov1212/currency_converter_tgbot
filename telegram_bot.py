@@ -4,7 +4,7 @@ import telebot
 
 from dotenv import load_dotenv
 
-from services import check_currencies_course_date
+from services import check_currencies_course_date, prepare_datas
 
 load_dotenv('.env')  # загружаем данные из виртуального окружения
 
@@ -15,7 +15,7 @@ bot = telebot.TeleBot(bot_token)  # создаем бота
 
 @bot.message_handler(commands=['start', 'help'])
 def start_bot(message):
-    """ Обработчик начальной команды бота """
+    """ Обработчик начальных команд бота """
 
     # отправляем в бот приветствие
     if message.text == '/start':
@@ -42,7 +42,35 @@ def start_bot(message):
 
         bot.send_message(message.chat.id, 'Основные команды бота\n'
                                           '/start - начало работы бота\n'
-                                          '/help - вывод основных команд')
+                                          '/help - вывод основных команд\n'
+                                          '/convert - конвертация валют\n'
+                                          '--------- Пример запроса на конвертацию ---------\n'
+                                          '/convert 100 EUR to USD\n'
+                                          'выведет результат конвертации 100 евро в доллары США')
+
+    # # выводим пример конвертации валют
+    # if message.text == '/convert':
+    #     bot.send_message(message.chat.id, '--------- Пример запроса на конвертацию ---------\n'
+    #                                       '/convert 100 EUR to USD\n'
+    #                                       'выведет результат конвертации 100 евро в доллары США')
+
+
+@bot.message_handler(commands=['convert'])
+def converter(message):
+    """ Обработчик команды конвертации валюты """
+
+    user_text = message.text  # сохраняем сообщение от пользователя
+    data_list = user_text.split()  # преобразуем строку в список
+
+    # проверяем правильность введенного пользователем запроса
+    if len(data_list) == 5:
+
+        # если запрос правильный производим конвертацию валюты
+        converted_data = prepare_datas(data_list)
+
+    else:
+        bot.send_message(message.chat.id, 'Вероятно вы неправильно ввели запрос\n'
+                                          'Попробуйте еще раз')
 
 
 bot.polling(non_stop=True)  # команда запуска непрерывной работы бота
