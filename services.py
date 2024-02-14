@@ -133,24 +133,49 @@ def converting_currencies(sum_to_convert, convert_type):
 
 
 def check_word(user_word):
-    """ Проверяет слово, введенное пользователем """
+    """ Проверяет слово, введенное пользователем и возвращает ответ"""
 
+    # список слов приветствия
     hello_words = ['приветули', 'здравствуй', 'хай', 'здорово']
+
+    # список слов прощания
     bye_words = ['пока', 'покеда', 'прощай', 'до свидания', 'увидимся']
 
+    # задаем ответ бота, если ни одно слово не подходит
+    bot_answer = 'Что-то на непонятном'
+
+    # проверяем слово пользователя в словах приветствия
     for word in hello_words:
         result = word.find(user_word)
+
+        # если слово пользователя есть в списке слов приветствия
         if result >= 0:
-            hello_answer = random.choice(hello_words)
-            return hello_answer
+            bot_answer = random.choice(hello_words)  # присваиваем произвольное слово ответа бота
             break
 
+    # проверяем слово пользователя в словах прощания
     for word in bye_words:
         result = word.find(user_word)
+
+        # если слово пользователя есть в списке слов прощания
         if result >= 0:
-            bye_answer = random.choice(bye_words)
-            return bye_answer
+            bot_answer = random.choice(bye_words)  # присваиваем произвольное слово ответа бота
             break
 
+    return bot_answer.capitalize()
 
-# print(check_word('пок'))
+
+def writing_log(user_text, chat_id):
+    """
+    Записывает в файл лог действий пользователя
+    :param user_text: текст, отправленный боту пользователем
+    :param chat_id: id чата пользователя с ботом
+    """
+
+    # задаем имя файла
+    file_name = os.path.abspath(f'./log_chat_id_{chat_id}.txt')
+
+    date_time_now = datetime.datetime.now()  # получаем текущие дату и время
+
+    with open(file_name, 'a') as file:
+        file.write(f'{date_time_now}: {user_text}\n')

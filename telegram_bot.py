@@ -4,7 +4,7 @@ import telebot
 
 from dotenv import load_dotenv
 
-from services import check_currencies_course_date, prepare_datas, check_word
+from services import check_currencies_course_date, prepare_datas, check_word, writing_log
 
 load_dotenv('.env')  # загружаем данные из виртуального окружения
 
@@ -48,11 +48,8 @@ def start_bot(message):
                                           '/convert 100 EUR to USD\n'
                                           'выведет результат конвертации 100 евро в доллары США')
 
-    # # выводим пример конвертации валют
-    # if message.text == '/convert':
-    #     bot.send_message(message.chat.id, '--------- Пример запроса на конвертацию ---------\n'
-    #                                       '/convert 100 EUR to USD\n'
-    #                                       'выведет результат конвертации 100 евро в доллары США')
+    # записываем действия пользователя в лог файл
+    writing_log(message.text, message.chat.id)
 
 
 @bot.message_handler(commands=['convert'])
@@ -74,6 +71,9 @@ def converter(message):
         bot.send_message(message.chat.id, 'Вероятно вы неправильно ввели запрос\n'
                                           'Попробуйте еще раз')
 
+    # записываем действия пользователя в лог файл
+    writing_log(message.text, message.chat.id)
+
 
 @bot.message_handler(content_types=['text'])
 def communicate_to_user(message):
@@ -81,12 +81,11 @@ def communicate_to_user(message):
 
     user_message = message.text.lower()  # сохраняем сообщение от пользователя
 
-    try:
-        bot_answer = check_word(user_message)  # проверяем слово пользователя и получаем ответ
-        bot.send_message(message.chat.id, bot_answer)  # отправляем ответ пользователю
+    bot_answer = check_word(user_message)  # проверяем слово пользователя и получаем ответ
+    bot.send_message(message.chat.id, bot_answer)  # отправляем ответ пользователю
 
-    except telebot.apihelper.ApiTelegramException:
-        bot.send_message(message.chat.id, 'что-то на непонятном')  # отправляем ответ пользователю
+    # записываем действия пользователя в лог файл
+    writing_log(message.text, message.chat.id)
 
 
 bot.polling(non_stop=True)  # команда запуска непрерывной работы бота
