@@ -4,7 +4,7 @@ import telebot
 
 from dotenv import load_dotenv
 
-from services import check_currencies_course_date, prepare_datas, check_word, writing_log
+from services import check_currencies_course_date, prepare_datas, check_word, writing_log, check_user_request
 
 load_dotenv('.env')  # загружаем данные из виртуального окружения
 
@@ -23,6 +23,8 @@ def start_bot(message):
         bot.send_message(message.chat.id, 'Привет, {0.first_name}!'.format(message.from_user))
         bot.send_message(message.chat.id, 'Бот позволяет производить конвертацию валют\n'
                                           'USD, EUR, RUB по текущему курсу\n'
+                                          'Также бот может отвечать на приветствие и прощание\n'
+                                          '-----------------------------------\n'
                                           'Для получения дополнительной информации выберите команду\n'
                                           '/help')
 
@@ -43,8 +45,8 @@ def start_bot(message):
         bot.send_message(message.chat.id, 'Основные команды бота\n'
                                           '/start - начало работы бота\n'
                                           '/help - вывод основных команд\n'
-                                          '/convert - конвертация валют\n'
-                                          '--------- Пример запроса на конвертацию ---------\n'
+                                          '/convert - конвертация валют\n\n'
+                                          '- Пример запроса на конвертацию -\n'
                                           '/convert 100 EUR to USD\n'
                                           'выведет результат конвертации 100 евро в доллары США')
 
@@ -60,7 +62,9 @@ def converter(message):
     data_list = user_text.split()  # преобразуем строку в список
 
     # проверяем правильность введенного пользователем запроса
-    if len(data_list) == 5:
+    check_point = check_user_request(data_list)
+
+    if check_point:
 
         # если запрос правильный производим конвертацию валюты
         converted_data = prepare_datas(data_list)
