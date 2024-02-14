@@ -92,14 +92,47 @@ def get_days_difference(date_time):
 def prepare_datas(data_in):
     """ Подготовка данных для конвертации """
 
-    print(data_in)
     sum_to_convert = int(data_in[1])  # получаем сумму для конвертации
-    print(sum_to_convert)
-    convert_type = ' '.join(data_in[2:])  # получаем тип конвертации
-    print(convert_type)
+
+    convert_type = ' '.join(data_in[2:]).lower()  # получаем тип конвертации
+
+    # конвертируем валюту
+    converted_data = converting_currencies(sum_to_convert, convert_type)
+
+    return converted_data
 
 
+def converting_currencies(sum_to_convert, convert_type):
+    """ Конвертация валюты """
+
+    currencies_data = reading_json()  # получаем данные о валютах
+
+    usd_course = currencies_data['Valute']['USD']['Value']  # курс доллара по отношению к рублю
+    eur_course = currencies_data['Valute']['EUR']['Value']  # курс евро по отношению к рублю
+
+    # конвертация рублей в доллары
+    if convert_type == 'rub to usd':
+        sum_after_convert = round((sum_to_convert / usd_course), 2)
+        return f'{sum_after_convert} USD'
+
+    # конвертация рублей в евро
+    if convert_type == 'rub to eur':
+        sum_after_convert = round((sum_to_convert / eur_course), 2)
+        return f'{sum_after_convert} EUR'
+
+    # конвертация долларов в евро
+    if convert_type == 'usd to eur':
+        sum_after_convert = round((sum_to_convert * (usd_course / eur_course)), 2)
+        return f'{sum_after_convert} EUR'
+
+    # конвертация евро в доллары
+    if convert_type == 'eur to usd':
+        sum_after_convert = round((sum_to_convert * (eur_course / usd_course)), 2)
+        return f'{sum_after_convert} USD'
 
 
-
-prepare_datas(['/convert', '100', 'EUR', 'to', 'USD'])
+# prepare_datas(['/convert', '100', 'EUR', 'to', 'USD'])
+# prepare_datas(['/convert', '105', 'RUB', 'to', 'USD'])
+# prepare_datas(['/convert', '60', 'RUB', 'to', 'EUR'])
+# prepare_datas(['/convert', '100', 'USD', 'to', 'EUR'])
+# prepare_datas(['/convert', '100', 'EUR', 'to', 'USD'])

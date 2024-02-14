@@ -68,6 +68,8 @@ def converter(message):
         # если запрос правильный производим конвертацию валюты
         converted_data = prepare_datas(data_list)
 
+        bot.send_message(message.chat.id, f'Результат - {converted_data}')
+
     else:
         bot.send_message(message.chat.id, 'Вероятно вы неправильно ввели запрос\n'
                                           'Попробуйте еще раз')
