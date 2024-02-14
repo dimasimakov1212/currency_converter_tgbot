@@ -81,7 +81,7 @@ def get_days_difference(date_time):
     date_time_now = datetime.datetime.now()  # получаем текущие дату и время
 
     time_now = date_time_now.astimezone(desired_timezone)  # текущее время с учетом часового пояса
-    # преобразуем время в формате ISO полученное из файла с учетом часового пояса
+    # преобразуем время из формата ISO, полученное из файла, с учетом часового пояса
     time_received = datetime.datetime.fromisoformat(date_time).astimezone(desired_timezone)
 
     # считаем разницу между текущей датой и полученной датой в днях
@@ -103,7 +103,7 @@ def prepare_datas(data_in):
     return converted_data
 
 
-def converting_currencies(sum_to_convert, convert_type):
+def converting_currencies(sum_to_convert: int, convert_type: str):
     """ Конвертация валюты """
 
     currencies_data = reading_json()  # получаем данные о валютах
@@ -131,8 +131,18 @@ def converting_currencies(sum_to_convert, convert_type):
         sum_after_convert = round((sum_to_convert * (eur_course / usd_course)), 2)
         return f'{sum_after_convert} USD'
 
+    # конвертация евро в рубли
+    if convert_type == 'eur to rub':
+        sum_after_convert = round((sum_to_convert * eur_course), 2)
+        return f'{sum_after_convert} RUB'
 
-def check_word(user_word):
+    # конвертация долларов в рубли
+    if convert_type == 'usd to rub':
+        sum_after_convert = round((sum_to_convert * usd_course), 2)
+        return f'{sum_after_convert} RUB'
+
+
+def check_word(user_word: str):
     """ Проверяет слово, введенное пользователем и возвращает ответ"""
 
     # список слов приветствия
@@ -179,3 +189,44 @@ def writing_log(user_text, chat_id):
 
     with open(file_name, 'a') as file:
         file.write(f'{date_time_now}: {user_text}\n')
+
+
+def check_user_request(data_list: list):
+    """ Проверка запроса пользователя на конвертацию """
+
+    check_point = True  # признак правильности ввода
+
+    # проверка, что сумма для конвертации число
+    try:
+        try:
+            int(data_list[1])
+        except IndexError:
+            check_point = False
+    except ValueError:
+        check_point = False
+
+    try:
+        currency_from = data_list[2]  # наименование валюты, из которой производится конвертация
+        currency_to = data_list[4]  # наименование валюты, в которую производится конвертация
+    except IndexError:
+        check_point = False
+
+    currencies_list = ['usd', 'eur', 'rub']
+
+    # проверяем количество слов в запросе
+    if len(data_list) != 5:
+        check_point = False
+
+    # проверяем соответствие валюты, из которой производится конвертация, списку валют
+    elif currency_from.lower() not in currencies_list:
+        check_point = False
+
+    # проверяем соответствие валюты, в которую производится конвертация, списку валют
+    elif currency_to.lower() not in currencies_list:
+        check_point = False
+
+    # проверяем если валюты равны
+    elif currency_from == currency_to:
+        check_point = False
+
+    return check_point
