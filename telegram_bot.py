@@ -4,7 +4,7 @@ import telebot
 
 from dotenv import load_dotenv
 
-from services import check_currencies_course_date, prepare_datas
+from services import check_currencies_course_date, prepare_datas, check_word
 
 load_dotenv('.env')  # загружаем данные из виртуального окружения
 
@@ -73,6 +73,20 @@ def converter(message):
     else:
         bot.send_message(message.chat.id, 'Вероятно вы неправильно ввели запрос\n'
                                           'Попробуйте еще раз')
+
+
+@bot.message_handler(content_types=['text'])
+def communicate_to_user(message):
+    """ Обработчик сообщений от пользователя """
+
+    user_message = message.text.lower()  # сохраняем сообщение от пользователя
+
+    try:
+        bot_answer = check_word(user_message)  # проверяем слово пользователя и получаем ответ
+        bot.send_message(message.chat.id, bot_answer)  # отправляем ответ пользователю
+
+    except telebot.apihelper.ApiTelegramException:
+        bot.send_message(message.chat.id, 'что-то на непонятном')  # отправляем ответ пользователю
 
 
 bot.polling(non_stop=True)  # команда запуска непрерывной работы бота

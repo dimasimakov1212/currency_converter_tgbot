@@ -4,6 +4,7 @@ import os
 import pytz
 import requests
 import datetime
+import random
 
 
 def get_currencies_course():
@@ -131,8 +132,25 @@ def converting_currencies(sum_to_convert, convert_type):
         return f'{sum_after_convert} USD'
 
 
-# prepare_datas(['/convert', '100', 'EUR', 'to', 'USD'])
-# prepare_datas(['/convert', '105', 'RUB', 'to', 'USD'])
-# prepare_datas(['/convert', '60', 'RUB', 'to', 'EUR'])
-# prepare_datas(['/convert', '100', 'USD', 'to', 'EUR'])
-# prepare_datas(['/convert', '100', 'EUR', 'to', 'USD'])
+def check_word(user_word):
+    """ Проверяет слово, введенное пользователем """
+
+    hello_words = ['приветули', 'здравствуй', 'хай', 'здорово']
+    bye_words = ['пока', 'покеда', 'прощай', 'до свидания', 'увидимся']
+
+    for word in hello_words:
+        result = word.find(user_word)
+        if result >= 0:
+            hello_answer = random.choice(hello_words)
+            return hello_answer
+            break
+
+    for word in bye_words:
+        result = word.find(user_word)
+        if result >= 0:
+            bye_answer = random.choice(bye_words)
+            return bye_answer
+            break
+
+
+# print(check_word('пок'))
